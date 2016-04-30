@@ -6,7 +6,7 @@ if THUI~=nil then return end
 
 THUI = {
 	groups = {},
-	active_group = nil,
+	active_groups = {},
 
 	default_fg_color = Vec4(1.0, 1.0, 1.0, 1.0),
 	default_bg_color = Vec4(0.0, 0.0, 0.0, 1.0),
@@ -45,6 +45,8 @@ function THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
 		name=name,
 		data=data,
 		mode=mode,
+		active=false,
+		showmouse=true,
 		anchorx=anchorx,
 		anchory=anchory,
 		width=width,
@@ -72,28 +74,67 @@ function THUI:LookupByName(name)
 end
 
 function THUI:Activate(name)
+	local group = self.groups[name]
+
 	local wnd = Window:GetCurrent()
 	wnd:FlushKeys()
 	wnd:FlushMouse()
-	wnd:ShowMouse()
+	
+	if group.showmouse == true then
+		wnd:ShowMouse()
+	end
 
-	self.active_group = self.groups[name]
+	if not group.active then
+		table.insert(self.active_groups, group)
+		group.active = true
+	end
 end
 
-function THUI:Deactivate()
+function THUI:Deactivate(name)
+	local showmouse = false
+	
 	local wnd = Window:GetCurrent()
 	wnd:FlushKeys()
 	wnd:FlushMouse()
-	wnd:HideMouse()
 
-	self.active_group = nil
+	if name == nil then
+		self.active_groups = {}
+	else
+		local group = self.groups[name]
+		
+		if group.active then
+			for i=1, #self.active_groups do
+				if self.active_groups[i] == group then
+					table.remove(self.active_groups, i)
+				elseif self.active_groups[i].showmouse then
+					showmouse = true
+				end
+			end
+			group.active = false
+		end
+	end
+
+	if not showmouse then
+		wnd:HideMouse()
+	end
 end
 
 function THUI:Update()
-	if self.active_group ~= nil then
-		local active_group = self.active_group
-		local ctx = Context:GetCurrent()
-		local wnd = Window:GetCurrent()
+	local ctx = Context:GetCurrent()
+	local wnd = Window:GetCurrent()
+
+	local mouse_pos = wnd:GetMousePosition()
+
+	local clicked = false
+	if self.mouse_down and not wnd:MouseDown(1) then
+		self.mouse_down = false
+		clicked = true
+	elseif wnd:MouseDown(1) then
+		self.mouse_down = true
+	end
+
+	for i=1, #self.active_groups do
+		local active_group = self.active_groups[i]
 		
 		--draw
 		ctx:SetBlendMode(Blend.Alpha)
@@ -110,16 +151,7 @@ function THUI:Update()
 		end
 		
 		--do events
-		local mouse_pos = wnd:GetMousePosition()
 		local result = qtree_lookup(active_group.qtree, mouse_pos.x, mouse_pos.y)
-
-		local clicked = false
-		if self.mouse_down and not wnd:MouseDown(1) then
-			self.mouse_down = false
-			clicked = true
-		elseif wnd:MouseDown(1) then
-			self.mouse_down = true
-		end
 		
 		local k,v
 		for k,v in pairs(result) do
