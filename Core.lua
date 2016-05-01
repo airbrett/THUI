@@ -7,6 +7,7 @@ if THUI~=nil then return end
 THUI = {
 	groups = {},
 	active_groups = {},
+	mouse_over_element = false,
 
 	default_fg_color = Vec4(1.0, 1.0, 1.0, 1.0),
 	default_bg_color = Vec4(0.0, 0.0, 0.0, 1.0),
@@ -124,8 +125,9 @@ function THUI:Update()
 	local wnd = Window:GetCurrent()
 
 	local mouse_pos = wnd:GetMousePosition()
-
+	self.mouse_over_element = false
 	local clicked = false
+
 	if self.mouse_down and not wnd:MouseDown(1) then
 		self.mouse_down = false
 		clicked = true
@@ -160,6 +162,7 @@ function THUI:Update()
 				   mouse_pos.y > v.y and mouse_pos.y < v.y + v.height then
 					v.hover = true
 					v.mouse_down = self.mouse_down
+					self.mouse_over_element = true
 					
 					if clicked then
 						if v.click ~=nil then
@@ -210,6 +213,10 @@ end
 
 function THUI:Callback(func, tbl, arg)
 	return {func, tbl, arg}
+end
+
+function THUI:MouseOverUI()
+	return self.mouse_over_element
 end
 
 function THUI:DrawText(ctx, text, x, y, justify_x, justify_y)
