@@ -1,0 +1,520 @@
+[size=6][b]The Hankinator's UI library[/b][/size]
+
+http://steamcommunity.com/sharedfiles/filedetails/?id=653673604
+
+This is a rudimentary GUI library with the goal of simplicity but with flexibility. Only basic widgets are included, Label, Button, Checkbox and Combobox. This should satisfy the majority of GUI needs but if you come up with a good case to include others let me know. All widgets can be themed with images for beautification. THUI is built around groups of GUI elements. Every group has a name, this name is used to activate (make visible) when you need it to. Only one group can be active at a time. THUI contains helper functions so that you can ensure the GUI will scale and look similar on different resolutions. The easiest way to layout a menu system is to create a script for each group, then apply the scripts to pivots in your level. If you wish to design it so, you can use the flow graph to control how the user navigates between groups. It is fairly straight forward to create your own widgets that don't look so bland. 
+
+To kick things off, I am going to start with required changes to Main.lua, a simple example, pause screen, journal, and finally the API reference. When I was thinking about this post, I was thinking I'd have more to say about each example but now that I've gotten to it, the ideas are gone. Please ask if things need additional clarification. I've put a lot of thought into the design of this library so that it could be used in the majority of use cases but if I have forgotten something obvious, please let me know!
+
+Main.lua modifications:
+It should be pretty trivial to make the same modifications to App.lua but I like Main.lua best and I don't want to spend time talking about App.lua. There is an example Main.lua in the examples directory with all these changes.
+
+1) First thing is first, import THUI at the top of the file 
+[CODE]
+import "Addons/THUI/THUI.lua"
+[/CODE]
+
+2) Immediately after the context is created, initialize THUI
+[CODE]
+THUI:Initialize()
+[/CODE]
+
+3) Change the while loop not to exit when we hit escape, this is for our pause menu example
+[CODE]
+while not exit_game do
+[/CODE]
+
+4) Next we need to change the program flow to only update the time and the world when the game isn't paused.
+[CODE]
+if not paused then
+    --Update the app timing
+    Time:Update()
+    
+    --Update the world
+    world:Update()
+end
+[/CODE]
+
+5) Immediately after world:Render(), we need to update THUI/THUI
+[CODE]
+THUI:Update()
+[/CODE]
+
+Simple example:
+This is a simple example of how to build a simple GUI screen with a label and a button. 
+[CODE]
+self.group = THUI:CreateGroup("hello_world", self, THUI.AUTOSCALE, 0, 0, 1023, 767)
+
+local title = THUI.Label:Create(512, 50, 0, 0, "Hello World!", THUI.JUSTIFY.CENTER, THUI.JUSTIFY.MIDDLE)
+title.font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(32,767))
+
+local button1 = THUI.Button:Create(512, 300, 200, 50, "A button")
+
+self.group:Add(title)
+self.group:Add(button1)
+[/CODE]
+
+[B]Pause screen example:[/B]
+This script will pause the game when the user hits the escape key. This example is utilizing the ANCHOR functionality to position all widgets to the left middle of the screen. It is pretty straight forward but the interesting parts we do in this order:
+
+1) We create the group
+2) Create a label for the title
+3) Create a Resume button
+4) Set the click callback for the resume button
+5) Create an Exit button
+6) Set the click callback for the exit button
+7) Add all the widgets to the group
+
+[CODE]
+import "Addons/THUI/THUI.lua"
+
+function Script:Start()
+    self.group = THUI:CreateGroup("pause_menu", self, THUI.ANCHOR, THUI.LEFT, THUI.MIDDLE, 200, 200)
+
+    self.group.update = THUI:Callback(self.UpdateUI, self, nil)
+
+    local title_font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(32,767))
+    local title = THUI.Label:Create(100, 0, 0, 0, "Paused!", THUI.CENTER, THUI.TOP)
+    title.font = title_font
+
+    local button1 = THUI.Button:Create(0, 50, 200, 50, "Resume")
+
+    button1.click = THUI:Callback(self.ResumeButtonClicked, self)
+    
+    local exitbutton = THUI.Button:Create(0, 150, 200, 50, "Exit")
+    exitbutton.click = THUI:Callback(self.ExitButtonClicked, self)
+
+    self.group:Add(title)
+    self.group:Add(button1)
+    self.group:Add(exitbutton)
+end
+
+function Script:ResumeButtonClicked(button)
+    self:HideMenu()
+end
+
+function Script:ExitButtonClicked(button)
+    exit_game = true
+end
+
+function Script:UpdateWorld()
+    if window:KeyHit(Key.Escape) then
+        if not paused then
+            self:ShowMenu()
+        end
+    end
+end
+
+
+function Script:UpdateUI(group, arg)
+    if window:KeyHit(Key.Escape) then
+        if paused then
+            self:HideMenu()
+        end
+    end
+end
+
+function Script:ShowMenu()
+    paused = true
+    Time:Pause()
+    THUI:Activate("pause_menu")
+end
+
+function Script:HideMenu()
+    paused = false
+    Time:Resume()
+    THUI:Deactivate()
+
+    --FPSPlayer.lua measures the distance from the middle of the screen to figure out how much
+    --the player is trying to look so we need to reset it when the user is done with the UI
+    local context = Context:GetCurrent()
+    Window:GetCurrent():SetMousePosition(Math:Round(context:GetWidth()/2), Math:Round(context:GetHeight()/2))
+end
+[/CODE]
+
+
+[B]Journal example:[/B]
+This is a little bit more complicated. But the first thing we need to do is create the journal menu itself. This is pretty simple but I will leave it to you to make the fancy things :). In this script I create 10 buttons, each button is created with the active flag false so that it is greyed out. When the player picks up a journal entry, the button will be set to active and they can click on the button to view the entry. The Journal Entry script should be put on the object itself, like a piece of paper, cassette tape, or whatever.
+
+Journal script:
+[CODE]
+import "Addons/THUI/THUI.lua"
+
+function Script:Start()
+    self.pg = THUI:CreateGroup("journal", self, THUI.AUTOSCALE, nil, nil, 1023, 767)
+
+    local font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(16, 767))
+    local title = THUI.Label:Create(512, 50, 0, 0, "Journal", THUI.CENTER, THUI.MIDDLE)
+    title.font = font
+
+    local button1 = THUI.Button:Create(50, 700, 200, 50, "Resume")
+
+    button1.click = THUI:Callback(self.ResumeButtonClicked, self)
+
+    self.pg:Add(title)
+    self.pg:Add(button1)
+    
+    self.entries = {}
+    self.entry_buttons = {}
+
+    for i=1, 10 do
+        local b = THUI.Button:Create(512, 45 + 55 * i, 200, 50, "????", THUI.CENTER, THUI.MIDDLE)
+        b.active = false
+        b.click = THUI:Callback(self.EntryButtonClicked, self, i)
+        self.pg:Add(b)
+        self.entry_buttons[i] = b
+    end
+
+    self.journal_entry = THUI:CreateGroup("journal_entry", self)
+end
+
+function Script:UpdateWorld()
+    if window:KeyHit(Key.J) then
+        if not paused then
+            paused = true
+            Time:Pause()
+            THUI:Activate("journal")
+        end
+    end
+end
+
+function Script:EntryButtonClicked(button, index)
+    THUI:Activate(self.entries[index].grp.name)
+end
+
+function Script:ResumeButtonClicked(button)
+    paused = false
+    Time:Resume()
+    THUI:Deactivate()
+
+    --FPSPlayer.lua measures the distance from the middle of the screen to figure out how much
+    --the player is trying to look so we need to reset it when the user is done with the UI
+    local context = Context:GetCurrent()
+    Window:GetCurrent():SetMousePosition(Math:Round(context:GetWidth()/2), Math:Round(context:GetHeight()/2))
+end
+
+function Script:AddJounalEntry(entry)
+    self.entries[entry.index] = entry
+    
+    local b = self.entry_buttons[entry.index]
+    b.active = true
+    b.text = entry.title
+
+    THUI:Activate(entry.grp.name)
+    paused = true
+    Time:Pause()
+end
+[/CODE]
+
+Journal entry script:
+[CODE]
+import "Addons/THUI/THUI.lua"
+
+Script.index = 3
+Script.title = "Entry 3"
+
+function Script:Start()
+    local font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(16, 767))
+
+    local text = {
+    "Day 45",
+    "",
+    "I have earned the Germans' trust.",
+    "They still do not realize I am a bear."
+    }
+
+    self.grp = THUI:CreateGroup("entry1", self, THUI.AUTOSCALE, nil, nil, 1023, 767)
+
+    local label = THUI.Label:Create(512, 10, 0, 0, self.title, THUI.CENTER, THUI.MIDDLE)
+    label.font = font
+
+    self.grp:Add(label)
+
+    local y = 150
+    local leading = font:GetHeight() * 1.3
+    for i=0, #text do
+        label = THUI.Label:Create(512, y, 0, 0, text[i], THUI.CENTER, THUI.MIDDLE)
+        label.font = font
+        self.grp:Add(label)
+        y = y + leading
+    end
+
+    local journal_button = THUI.Button:Create(100, 700, 200, 50, "Journal")
+    journal_button.click = THUI:Callback(self.JournalButtonClick, self, nil)
+
+    self.grp:Add(journal_button)
+end
+
+function Script:Use()
+    THUI:LookupByName("journal"):AddJounalEntry(self)
+    self.entity:Hide()
+end
+
+function Script:JournalButtonClick(button, arg)
+    THUI:Activate("journal")
+end
+[/CODE]
+
+[size=6][B]Reference:[/B][/size]
+This is where the majority if interesting text goes. If something up above doesn't make sense, it might be made clear in this section.
+[size=5][b]THUI[/b][/size]
+[b]constants[/b]
+[code]
+THUI.ABSOLUTE
+THUI.AUTOSCALE
+THUI.ANCHOR
+[/code]
+These values are using when creating a widget group, they will dictate the behavior of how the size and dimensions of the widgets will be modified (if at all) when added to the group.
+
+[code]
+THUI.LEFT --x axis
+THUI.CENTER --x axis
+THUI.RIGHT --x axis
+THUI.MIDDLE --y axis
+THUI.TOP --y axis
+THUI.BOTTOM -- y axis
+[/code]
+This is used for defining how a widget is positioned via the justify flags.
+
+[b]properties[/b]
+[code]
+THUI.default_fg_color --Foreground color used by widgets
+THUI.default_bg_color --Background color used by widgets
+THUI.default_inactive_color --Inactive color used by widgets
+THUI.default_hover_color --Color used by widgets when mouse is hovering over them
+THUI.default_mouse_down_color --Color used by widgets when mouse is hovering over them and the left mouse button is down
+THUI.default_font --This is the font used by the widgets
+[/code]
+
+[b]functions[/b]
+[code]
+THUI:Initialize()
+[/code]
+Initializes THUI defaul font to scale with the context height. This function should be called only on startup after the context is created.
+
+[code]
+THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
+[/code]
+[list]
+[*]name=the name of the group, this is the name you will use when you want to activate this group
+[*]data=this is any data you want to be able to retrieve from the group at a later time (usually with LookUpByName())
+[*]mode=this can be THUI.AUTOSCALE, THUI.ABSOLUTE, or THUI.ANCHOR. THUI.AUTOSCALE will stretch all widgets in relation to the width and height specified. THUI.ABSOLUTE will make no adjustments to the widgets dimensions. THUI.ANCHOR will utilize anchorx, anchory, width and height parameters to move the widgets to the position specified.
+[*]anchorx=THUI.LEFT, THUI.CENTER, THUI.RIGHT used by THUI.AUTOSCALE
+[*]anchory=THUI.MIDDLE, THUI.TOP, THUI.BOTTOM used by THUI.AUTOSCALE
+[*]width=width of the widget group, this is used by THUI.AUTOSCALE and THUI.ANCHOR
+[*]height=height of the widget group, this is used by THUI.AUTOSCALE and THUI.ANCHOR
+
+[*]return=group table
+[/list]
+This function creates a group to add widgets to.
+
+[code]
+THUI:LookupByName(name)
+[/code]
+[list]
+[*]name=the name of the group you are looking for
+[/list]
+
+Call this function if you want to retrieve a group to do something to it.
+
+[code]
+THUI:Activate(name)
+[/code]
+[list]
+[*]name=the name of the group you want to make visible
+[/list]
+This function will activate a group, making it's widgets visible
+
+[code]
+THUI:Deactivate()
+[/code]
+This function will hide cause the widgets contained in the currently active group to be hidden
+
+[code]
+THUI:Update()
+[/code]
+This function should be called from Main.lua every iteration. It will redraw any widgets and also fire off any callbacks that are ready to be fired
+
+[code]
+THUI:Rel2AbsX(x, max_value)
+[/code]
+[list]
+[*]x=relative position
+[*]max_value=used to determine ratio for scaling
+
+[*]return value=absolute position
+[/list]
+
+Returns the absolution position representation of a relative position along the x axis. By default the the relative position is a range of 0 being far left and 1024 being far right.
+
+[code]
+THUI:Rel2AbsY(y, max_value)
+[/code]
+[list]
+[*]y=relative position
+[*]max_value=used to determine ratio for scaling
+
+[*]return value=absolute position
+[/list]
+
+Returns the absolution position representation of a relative position along the y axis. By default the the relative position is a range of 0 being top and 768 being bottom.
+
+[code]
+THUI:Callback(func, tbl, arg)
+[/code]
+[list]
+[*]func=function to callback
+[*]tbl=table the function exists in, can be nil if func is a global function
+[*]arg=arg that should be used when calling the function, can be nil
+[/list]
+
+This function creates a callback that is used by buttons to do a task.
+
+[size=5][b]Group[/b][/size]
+[b]properties[/b]
+[code]
+group.update --function callback called every frame when group is active
+[/code]
+
+[b]functions[/b]
+[code]
+group:Add(widget)
+[/code]
+[list]
+[*]widget=widget to add to the group
+[/list]
+
+Adds a specified widget to the group. At this time the widget's position and dimensions are finalized depending on the group's mode.
+
+[size=5][b]Label[/b][/size]
+[b]properties[/b]
+[code]
+label.text --Text to be displayed
+label.font --Font to be used when label is drawn
+label.img --Texture to be drawn instead of text
+[/code]
+
+[b]functions[/b]
+[code]
+THUI.Label:Create(x, y, width, height, text, justify_x, justify_y)
+[/code]
+[list]
+[*]x=x position
+[*]y=y position
+[*]width=width, required when img property is set
+[*]height=height, required when img property set
+[*]justify_x=can be THUI.LEFT, THUI.CENTER or THUI.RIGHT
+[*]justify_y=can be THUI.MIDDLE, THUI.TOP, or THUI.BOTTOM
+
+[*]return=label table
+[/list]
+
+[size=5][b]Button[/b][/size]
+[b]properties[/b]
+[code]
+button.text --Text to be displayed
+button.font --Font to be used when button text is drawn
+button.active --This flag determines if the button is enabled or not.
+button.visible --Hides or shows the button
+button.click --Function callback for when button is clicked
+[/code]
+
+[code]
+button.fg_color --color used in idle state
+button.bg_color --background color
+button.hover_color --mouse hovering over widget
+button.mouse_down_color --mouse hovering and mouse button down
+button.inactive_color --active flag false
+[/code]
+Colors used to draw the button when not themed with textures.
+
+[code]
+button.img_mouseup --idle state
+button.img_hover --mouse hovering over widget
+button.img_mouse_down --mouse hovering and mouse button down
+button.img_inactive --active flag false
+[/code]
+Textures to be rendered for different states of the button.
+
+[b]functions[/b]
+[code]
+THUI.Button:Create(x, y, width, height, text, justify_x, justify_y)
+[/code]
+[list]
+[*]x=x position
+[*]y=y position
+[*]width=width
+[*]height=height
+[*]justify_x=can be THUI.LEFT, THUI.CENTER or THUI.RIGHT
+[*]justify_y=can be THUI.MIDDLE, THUI.TOP, or THUI.BOTTOM
+
+[*]return=button table
+[/list]
+
+[size=5][b]Checkbox[/b][/size]
+[b]properties[/b]
+[code]
+checkbox.active --This flag determines if the checkbox is enabled or not.
+checkbox.checked --Set to true if box is checked
+[/code]
+
+[code]
+inactive_color --active flag false
+mouse_down_color --mouse hovering and mouse button down
+hover_color --mouse hovering over widget
+fg_color --color used in idle state
+bg_color --background color
+[/code]
+Colors used to draw the checkbox when not themed with textures.
+
+[code]
+checkbox.img_inactive --active flag false
+checkbox.img_mouse_down --mouse hovering and mouse button down
+checkbox.img_hover --mouse hovering over widget
+checkbox.img_mouseup --idle state
+checkbox.img_checked_inactive --active flag false while checked
+checkbox.img_checked_mouse_down --mouse hovering and mouse button down while checked
+checkbox.img_checked_hover --mouse hovering over widget while checked
+checkbox.img_checked_mouseup --idle state while checked
+[/code]
+Textures to be rendered for different states of the checkbox.
+
+[b]functions[/b]
+[code]
+THUI.CheckBox:Create(x, y, width, height, justify_x, justify_y)
+[/code]
+[list]
+[*]x=x position
+[*]y=y position
+[*]width=width
+[*]height=height
+[*]justify_x=can be THUI.LEFT, THUI.CENTER or THUI.RIGHT
+[*]justify_y=can be THUI.MIDDLE, THUI.TOP, or THUI.BOTTOM
+
+[*]return=checkbox table
+[/list]
+
+[size=5][b]Combobox[/b][/size]
+The combobox isn't really a widget on it's own. It's a combination of 2 buttons and a label.
+[b]properties[/b]
+[code]
+combo.left_button --left button table, see button reference
+combo.right_button --right button table, see button reference
+combo.selected --The currently selected item in the list of values
+[/code]
+[b]functions[/b]
+[code]
+THUI.ComboBox:Create(x, y, width, height, values, selected, justify_x, justify_y)
+[/code]
+[list]
+[*]x=x position
+[*]y=y position
+[*]width=width
+[*]height=height
+[*]values=table of possible values that can be selected
+[*]selected=the index of the default value to be selected
+[*]justify_x=can be THUI.LEFT, THUI.CENTER or THUI.RIGHT
+[*]justify_y=can be THUI.MIDDLE, THUI.TOP, or THUI.BOTTOM
+
+[*]return=combobox table
+[/list]
