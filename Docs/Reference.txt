@@ -1,0 +1,271 @@
+[size=6][B]Reference:[/B][/size]
+This is where the majority if interesting text goes. If something up above doesn't make sense, it might be made clear in this section.
+[size=5][b]THUI[/b][/size]
+[b]constants[/b]
+[code]
+THUI.ABSOLUTE
+THUI.AUTOSCALE
+THUI.ANCHOR
+[/code]
+These values are using when creating a widget group, they will dictate the behavior of how the size and dimensions of the widgets will be modified (if at all) when added to the group.
+
+[code]
+THUI.LEFT --x axis
+THUI.CENTER --x axis
+THUI.RIGHT --x axis
+THUI.MIDDLE --y axis
+THUI.TOP --y axis
+THUI.BOTTOM -- y axis
+[/code]
+This is used for defining how a widget is positioned via the justify flags.
+
+[b]properties[/b]
+[code]
+THUI.default_fg_color --Foreground color used by widgets
+THUI.default_bg_color --Background color used by widgets
+THUI.default_inactive_color --Inactive color used by widgets
+THUI.default_hover_color --Color used by widgets when mouse is hovering over them
+THUI.default_mouse_down_color --Color used by widgets when mouse is hovering over them and the left mouse button is down
+THUI.default_font --This is the font used by the widgets
+[/code]
+
+[b]functions[/b]
+[code]
+THUI:Initialize()
+[/code]
+Initializes THUI defaul font to scale with the context height. This function should be called only on startup after the context is created.
+
+[code]
+THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
+[/code]
+[list]
+[*]name=the name of the group, this is the name you will use when you want to activate this group
+[*]data=this is any data you want to be able to retrieve from the group at a later time (usually with LookUpByName())
+[*]mode=this can be THUI.AUTOSCALE, THUI.ABSOLUTE, or THUI.ANCHOR. THUI.AUTOSCALE will stretch all widgets in relation to the width and height specified. THUI.ABSOLUTE will make no adjustments to the widgets dimensions. THUI.ANCHOR will utilize anchorx, anchory, width and height parameters to move the widgets to the position specified.
+[*]anchorx=THUI.LEFT, THUI.CENTER, THUI.RIGHT used by THUI.AUTOSCALE
+[*]anchory=THUI.MIDDLE, THUI.TOP, THUI.BOTTOM used by THUI.AUTOSCALE
+[*]width=width of the widget group, this is used by THUI.AUTOSCALE and THUI.ANCHOR
+[*]height=height of the widget group, this is used by THUI.AUTOSCALE and THUI.ANCHOR
+
+[*]return=group table
+[/list]
+This function creates a group to add widgets to.
+
+[code]
+THUI:LookupByName(name)
+[/code]
+[list]
+[*]name=the name of the group you are looking for
+[/list]
+
+Call this function if you want to retrieve a group to do something to it.
+
+[code]
+THUI:Activate(name)
+[/code]
+[list]
+[*]name=the name of the group you want to make visible
+[/list]
+This function will activate a group, making it's widgets visible
+
+[code]
+THUI:Deactivate(name)
+[/code]
+[list]
+[*]name=the name of the group you want to hide, if name is nil all groups are hidden
+[/list]
+This function will hide cause the widgets contained in the currently active group to be hidden
+
+[code]
+THUI:Update()
+[/code]
+This function should be called from Main.lua every iteration. It will redraw any widgets and also fire off any callbacks that are ready to be fired
+
+[code]
+THUI:MouseOverUI()
+[/code]
+Returns true if the mouse is hovering over a widget, false otherwise
+
+[code]
+THUI:Rel2AbsX(x, max_value)
+[/code]
+[list]
+[*]x=relative position
+[*]max_value=used to determine ratio for scaling
+
+[*]return value=absolute position
+[/list]
+
+Returns the absolution position representation of a relative position along the x axis. By default the the relative position is a range of 0 being far left and 1024 being far right.
+
+[code]
+THUI:Rel2AbsY(y, max_value)
+[/code]
+[list]
+[*]y=relative position
+[*]max_value=used to determine ratio for scaling
+
+[*]return value=absolute position
+[/list]
+
+Returns the absolution position representation of a relative position along the y axis. By default the the relative position is a range of 0 being top and 768 being bottom.
+
+[code]
+THUI:Callback(func, tbl, arg)
+[/code]
+[list]
+[*]func=function to callback
+[*]tbl=table the function exists in, can be nil if func is a global function
+[*]arg=arg that should be used when calling the function, can be nil
+[/list]
+
+This function creates a callback that is used by buttons to do a task.
+
+[size=5][b]Group[/b][/size]
+[b]properties[/b]
+[code]
+group.update --function callback called every frame when group is active
+[/code]
+
+[b]functions[/b]
+[code]
+group:Add(widget)
+[/code]
+[list]
+[*]widget=widget to add to the group
+[/list]
+
+Adds a specified widget to the group. At this time the widget's position and dimensions are finalized depending on the group's mode.
+
+[size=5][b]Label[/b][/size]
+[b]properties[/b]
+[code]
+label.text --Text to be displayed
+label.font --Font to be used when label is drawn
+label.img --Texture to be drawn instead of text
+[/code]
+
+[b]functions[/b]
+[code]
+THUI.Label:Create(x, y, width, height, text, justify_x, justify_y)
+[/code]
+[list]
+[*]x=x position
+[*]y=y position
+[*]width=width, required when img property is set
+[*]height=height, required when img property set
+[*]justify_x=can be THUI.LEFT, THUI.CENTER or THUI.RIGHT
+[*]justify_y=can be THUI.MIDDLE, THUI.TOP, or THUI.BOTTOM
+
+[*]return=label table
+[/list]
+
+[size=5][b]Button[/b][/size]
+[b]properties[/b]
+[code]
+button.text --Text to be displayed
+button.font --Font to be used when button text is drawn
+button.active --This flag determines if the button is enabled or not.
+button.visible --Hides or shows the button
+button.click --Function callback for when button is clicked
+[/code]
+
+[code]
+button.fg_color --color used in idle state
+button.bg_color --background color
+button.hover_color --mouse hovering over widget
+button.mouse_down_color --mouse hovering and mouse button down
+button.inactive_color --active flag false
+[/code]
+Colors used to draw the button when not themed with textures.
+
+[code]
+button.img_mouseup --idle state
+button.img_hover --mouse hovering over widget
+button.img_mouse_down --mouse hovering and mouse button down
+button.img_inactive --active flag false
+[/code]
+Textures to be rendered for different states of the button.
+
+[b]functions[/b]
+[code]
+THUI.Button:Create(x, y, width, height, text, justify_x, justify_y)
+[/code]
+[list]
+[*]x=x position
+[*]y=y position
+[*]width=width
+[*]height=height
+[*]justify_x=can be THUI.LEFT, THUI.CENTER or THUI.RIGHT
+[*]justify_y=can be THUI.MIDDLE, THUI.TOP, or THUI.BOTTOM
+
+[*]return=button table
+[/list]
+
+[size=5][b]Checkbox[/b][/size]
+[b]properties[/b]
+[code]
+checkbox.active --This flag determines if the checkbox is enabled or not.
+checkbox.checked --Set to true if box is checked
+[/code]
+
+[code]
+inactive_color --active flag false
+mouse_down_color --mouse hovering and mouse button down
+hover_color --mouse hovering over widget
+fg_color --color used in idle state
+bg_color --background color
+[/code]
+Colors used to draw the checkbox when not themed with textures.
+
+[code]
+checkbox.img_inactive --active flag false
+checkbox.img_mouse_down --mouse hovering and mouse button down
+checkbox.img_hover --mouse hovering over widget
+checkbox.img_mouseup --idle state
+checkbox.img_checked_inactive --active flag false while checked
+checkbox.img_checked_mouse_down --mouse hovering and mouse button down while checked
+checkbox.img_checked_hover --mouse hovering over widget while checked
+checkbox.img_checked_mouseup --idle state while checked
+[/code]
+Textures to be rendered for different states of the checkbox.
+
+[b]functions[/b]
+[code]
+THUI.CheckBox:Create(x, y, width, height, justify_x, justify_y)
+[/code]
+[list]
+[*]x=x position
+[*]y=y position
+[*]width=width
+[*]height=height
+[*]justify_x=can be THUI.LEFT, THUI.CENTER or THUI.RIGHT
+[*]justify_y=can be THUI.MIDDLE, THUI.TOP, or THUI.BOTTOM
+
+[*]return=checkbox table
+[/list]
+
+[size=5][b]Combobox[/b][/size]
+The combobox isn't really a widget on it's own. It's a combination of 2 buttons and a label.
+[b]properties[/b]
+[code]
+combo.left_button --left button table, see button reference
+combo.right_button --right button table, see button reference
+combo.selected --The currently selected item in the list of values
+[/code]
+[b]functions[/b]
+[code]
+THUI.ComboBox:Create(x, y, width, height, values, selected, justify_x, justify_y)
+[/code]
+[list]
+[*]x=x position
+[*]y=y position
+[*]width=width
+[*]height=height
+[*]values=table of possible values that can be selected
+[*]selected=the index of the default value to be selected
+[*]justify_x=can be THUI.LEFT, THUI.CENTER or THUI.RIGHT
+[*]justify_y=can be THUI.MIDDLE, THUI.TOP, or THUI.BOTTOM
+
+[*]return=combobox table
+[/list]
