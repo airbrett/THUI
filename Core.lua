@@ -99,6 +99,10 @@ function THUI:Deactivate(name)
 	wnd:FlushMouse()
 
 	if name == nil then
+		for i=1, #self.active_groups do
+			self.active_groups[i].active = false
+		end
+
 		self.active_groups = {}
 	else
 		local group = self.groups[name]

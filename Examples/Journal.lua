@@ -33,21 +33,20 @@ end
 
 function Script:UpdateWorld()
 	if window:KeyHit(Key.J) then
-		if not paused then
-			paused = true
-			Time:Pause()
+		if not TH.GamePaused() then
+			TH.PauseGame(true)
 			THUI:Activate("journal")
 		end
 	end
 end
 
 function Script:EntryButtonClicked(button, index)
+	THUI:Deactivate("journal")
 	THUI:Activate(self.entries[index].grp.name)
 end
 
 function Script:ResumeButtonClicked(button)
-	paused = false
-	Time:Resume()
+	TH.PauseGame(false)
 	THUI:Deactivate()
 
 	--FPSPlayer.lua measures the distance from the middle of the screen to figure out how much
@@ -62,8 +61,4 @@ function Script:AddJounalEntry(entry)
 	local b = self.entry_buttons[entry.index]
 	b.active = true
 	b.text = entry.title
-
-	THUI:Activate(entry.grp.name)
-	paused = true
-	Time:Pause()
 end

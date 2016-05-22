@@ -39,9 +39,12 @@ end
 
 function Script:Use()
 	THUI:LookupByName("journal"):AddJounalEntry(self)
+	THUI:Activate("entry1")
+	TH:PauseGame(true)
 	self.entity:Hide()
 end
 
 function Script:JournalButtonClick(button, arg)
+	THUI:Deactivate("entry1")
 	THUI:Activate("journal")
 end

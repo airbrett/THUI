@@ -100,14 +100,12 @@ function Script:UpdateUI(group, arg)
 end
 
 function Script:ShowMenu()
-	paused = true
-	Time:Pause()
+	TH.PauseGame(true)
 	THUI:Activate("pause_menu")
 end
 
 function Script:HideMenu()
-	paused = false
-	Time:Resume()
+	TH.PauseGame(false)
 	THUI:Deactivate("pause_menu")
 
 	--FPSPlayer.lua measures the distance from the middle of the screen to figure out how much
