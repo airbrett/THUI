@@ -35,19 +35,19 @@ function Script:UpdateWorld()
 	if window:KeyHit(Key.J) then
 		if not TH.GamePaused() then
 			TH.PauseGame(true)
-			THUI:Activate("journal")
+			THUI:Show("journal")
 		end
 	end
 end
 
 function Script:EntryButtonClicked(button, index)
-	THUI:Deactivate("journal")
-	THUI:Activate(self.entries[index].grp.name)
+	THUI:Hide("journal")
+	THUI:Show(self.entries[index].grp.name)
 end
 
 function Script:ResumeButtonClicked(button)
 	TH.PauseGame(false)
-	THUI:Deactivate()
+	THUI:Hide("journal")
 
 	--FPSPlayer.lua measures the distance from the middle of the screen to figure out how much
 	--the player is trying to look so we need to reset it when the user is done with the UI

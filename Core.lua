@@ -74,8 +74,10 @@ function THUI:LookupByName(name)
 	return self.groups[name].data
 end
 
-function THUI:Activate(name)
+function THUI:Show(name)
 	local group = self.groups[name]
+
+	assert(group ~= nil, "THUI Show() invalid group name")
 
 	local wnd = Window:GetCurrent()
 	wnd:FlushKeys()
@@ -91,37 +93,49 @@ function THUI:Activate(name)
 	end
 end
 
-function THUI:Deactivate(name)
+function THUI:Hide(name)
 	local showmouse = false
 	
 	local wnd = Window:GetCurrent()
 	wnd:FlushKeys()
 	wnd:FlushMouse()
 
-	if name == nil then
-		for i=1, #self.active_groups do
-			self.active_groups[i].active = false
-		end
+	local group = self.groups[name]
 
-		self.active_groups = {}
-	else
-		local group = self.groups[name]
-		
-		if group.active then
-			for i=1, #self.active_groups do
-				if self.active_groups[i] == group then
-					table.remove(self.active_groups, i)
-				elseif self.active_groups[i].showmouse then
-					showmouse = true
-				end
+	assert(group ~= nil, "THUI Hide() - invalid group name")
+	
+	if group.active then
+		for i=1, #self.active_groups do
+			if self.active_groups[i] == group then
+				table.remove(self.active_groups, i)
+			elseif self.active_groups[i].showmouse then
+				showmouse = true
 			end
-			group.active = false
 		end
+		group.active = false
 	end
 
 	if not showmouse then
 		wnd:HideMouse()
 	end
+end
+
+function THUI:Activate(name)
+	THUI:Deactivate()
+	THUI:Show(name)
+end
+
+function THUI:Deactivate()
+	local wnd = Window:GetCurrent()
+	wnd:FlushKeys()
+	wnd:FlushMouse()
+
+	for i=1, #self.active_groups do
+		self.active_groups[i].active = false
+	end
+
+	self.active_groups = {}
+	wnd:HideMouse()
 end
 
 function THUI:Update()
