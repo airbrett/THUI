@@ -104,7 +104,7 @@ THUI:PauseGame(pause)
 Convenience function for pausing and resuming the game when Main.lua has required changes (see Main.lua in examples directory)
 
 [code]
-function THUI:GamePaused()
+THUI:GamePaused()
 [/code]
 Returns true if game is paused, false if not paused.
 
