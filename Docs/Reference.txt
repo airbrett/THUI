@@ -60,21 +60,35 @@ THUI:LookupByName(name)
 
 Call this function if you want to retrieve a group to do something to it.
 
+
+[code]
+THUI:Show(name)
+[/code]
+[list]
+[*]name=the name of the group you want to make visible
+[/list]
+This function will activate a group, making it's widgets visible. You may have multiple visible groups.
+
+[code]
+THUI:Hide()
+[/code]
+[list]
+[*]name=the name of the group you want to hide
+[/list]
+This function will hide a group by name.
+
 [code]
 THUI:Activate(name)
 [/code]
 [list]
 [*]name=the name of the group you want to make visible
 [/list]
-This function will activate a group, making it's widgets visible
+This function will activate a group, making it's widgets visible. It will also hide any currently visible groups. This function is deprecated, please see THUI:Show()
 
 [code]
-THUI:Deactivate(name)
+THUI:Deactivate()
 [/code]
-[list]
-[*]name=the name of the group you want to hide, if name is nil all groups are hidden
-[/list]
-This function will hide cause the widgets contained in the currently active group to be hidden
+This function will hide all visible groups. This function is deprecated, please see THUI:Hide()
 
 [code]
 THUI:Update()
