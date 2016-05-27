@@ -96,6 +96,19 @@ THUI:Update()
 This function should be called from Main.lua every iteration. It will redraw any widgets and also fire off any callbacks that are ready to be fired
 
 [code]
+THUI:PauseGame(pause)
+[/code]
+[list]
+[*]pause=true will pause, false will resume
+[/list]
+Convenience function for pausing and resuming the game when Main.lua has required changes (see Main.lua in examples directory)
+
+[code]
+function THUI:GamePaused()
+[/code]
+Returns true if game is paused, false if not paused.
+
+[code]
 THUI:MouseOverUI()
 [/code]
 Returns true if the mouse is hovering over a widget, false otherwise
