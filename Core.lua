@@ -292,3 +292,19 @@ function THUI:GroupAdd(widget)
 		table.insert(self.widgets, widget)
 	end
 end
+
+
+--I can't think of a better spot for this function right now, bleh.
+function THUI:PauseGame(pause)
+	if pause then
+		paused = true
+		Time:Pause()
+	else
+		paused = false
+		Time:Resume()
+	end
+end
+
+function THUI:GamePaused()
+	return paused
+end

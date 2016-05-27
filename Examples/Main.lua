@@ -18,24 +18,6 @@ if context==nil then return end
 
 THUI:Initialize()
 
---I don't really like putting functions in Main.lua like this but I don't know if I want to split
---up the logic for pausing the game. Maybe I just put it in Core.lua and let it be. Hmmmm.
-TH = {
-	paused = false,
-	PauseGame = function(pause)
-		if pause then
-			TH.paused = true
-			Time:Pause()
-		else
-			TH.paused = false
-			Time:Resume()
-		end
-	end,
-	GamePaused = function()
-		return TH.paused
-	end
-}
-
 --Create a world
 world=World:Create()
 world:SetLightQuality((System:GetProperty("lightquality","1")))
@@ -44,10 +26,9 @@ world:SetLightQuality((System:GetProperty("lightquality","1")))
 local mapfile = System:GetProperty("map","Maps/start.map")
 if Map:Load(mapfile)==false then return end
 
-
+paused = false
 exit_game = false
-	
---while window:KeyDown(Key.Escape)==false do
+
 while not exit_game do
 	
 	--If window has been closed, end the program
@@ -67,14 +48,13 @@ while not exit_game do
 		changemapname = nil
 	end	
 	
-	if not TH.paused then
+	if not paused then
 		--Update the app timing
 		Time:Update()
 		
 		--Update the world
 		world:Update()
 	end
-
 	--Render the world
 	world:Render()
 

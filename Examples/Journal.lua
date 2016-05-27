@@ -33,8 +33,8 @@ end
 
 function Script:UpdateWorld()
 	if window:KeyHit(Key.J) then
-		if not TH.GamePaused() then
-			TH.PauseGame(true)
+		if not THUI:GamePaused() then
+			THUI:PauseGame(true)
 			THUI:Show("journal")
 		end
 	end
@@ -46,7 +46,7 @@ function Script:EntryButtonClicked(button, index)
 end
 
 function Script:ResumeButtonClicked(button)
-	TH.PauseGame(false)
+	THUI:PauseGame(false)
 	THUI:Hide("journal")
 
 	--FPSPlayer.lua measures the distance from the middle of the screen to figure out how much
