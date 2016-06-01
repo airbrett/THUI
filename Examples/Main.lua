@@ -1,5 +1,8 @@
 import "Addons/THUI/THUI.lua"
 
+paused = false
+exit_game = false
+
 --Initialize Steamworks (optional)
 Steamworks:Initialize()
 
@@ -25,9 +28,6 @@ world:SetLightQuality((System:GetProperty("lightquality","1")))
 --Load a map
 local mapfile = System:GetProperty("map","Maps/start.map")
 if Map:Load(mapfile)==false then return end
-
-paused = false
-exit_game = false
 
 while not exit_game do
 	
