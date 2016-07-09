@@ -52,18 +52,10 @@ function THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
 		anchory=anchory,
 		width=width,
 		height=height,
-		qtree={},
+		qtree=qtree_create(4, 4, 0, 0, ctx:GetWidth(), ctx:GetHeight()),
 		widgets={},
 		Add=THUI.GroupAdd
 	}
-	
-	group.qtree.left = 0
-	group.qtree.top = 0
-	group.qtree.right = ctx:GetWidth()
-	group.qtree.bottom = ctx:GetHeight()
-
-	qtree_subdivide(group.qtree, 4)
-
 	
 	THUI.groups[name] = group
 
@@ -166,6 +158,9 @@ function THUI:Update()
 			end
 		end
 
+		--ctx:SetColor(0, 1, 0, 1)
+		--_qtree_draw(active_group.qtree)
+
 		if active_group.update ~= nil then
 			self:DoCallback(active_group.update, active_group)
 		end
@@ -173,18 +168,20 @@ function THUI:Update()
 		--do events
 		local result = qtree_lookup(active_group.qtree, mouse_pos.x, mouse_pos.y)
 		
-		local k,v
-		for k,v in pairs(result) do
-			if v.visible and v.active then
-				if mouse_pos.x > v.x and mouse_pos.x < v.x + v.width and
-				   mouse_pos.y > v.y and mouse_pos.y < v.y + v.height then
-					v.hover = true
-					v.mouse_down = self.mouse_down
-					self.mouse_over_element = true
-					
-					if clicked then
-						if v.click ~=nil then
-							self:DoCallback(v.click, v)
+		if result ~= nil then
+			local k,v
+			for k,v in pairs(result) do
+				if v.visible and v.active then
+					if mouse_pos.x > v.x and mouse_pos.x < v.x + v.width and
+						mouse_pos.y > v.y and mouse_pos.y < v.y + v.height then
+						v.hover = true
+						v.mouse_down = self.mouse_down
+						self.mouse_over_element = true
+						
+						if clicked then
+							if v.click ~=nil then
+								self:DoCallback(v.click, v)
+							end
 						end
 					end
 				end
