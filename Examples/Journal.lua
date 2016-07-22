@@ -47,7 +47,7 @@ end
 
 function Script:ResumeButtonClicked(button)
 	THUI:PauseGame(false)
-	THUI:Hide("journal")
+	THUI:Hide(self.pg)
 
 	--FPSPlayer.lua measures the distance from the middle of the screen to figure out how much
 	--the player is trying to look so we need to reset it when the user is done with the UI

@@ -90,13 +90,17 @@ function THUI:Show(name)
 end
 
 function THUI:Hide(name)
+	if type(name) == "string" then
+		local group = self.groups[name]
+	else
+		group = name
+	end
+
 	local showmouse = false
 	
 	local wnd = Window:GetCurrent()
 	wnd:FlushKeys()
 	wnd:FlushMouse()
-
-	local group = self.groups[name]
 
 	assert(group ~= nil, "THUI Hide() - invalid group name")
 	
