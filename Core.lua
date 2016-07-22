@@ -67,7 +67,11 @@ function THUI:LookupByName(name)
 end
 
 function THUI:Show(name)
-	local group = self.groups[name]
+	if type(name) == "string" then
+		local group = self.groups[name]
+	else
+		group = name
+	end
 
 	assert(group ~= nil, "THUI Show() invalid group name")
 

@@ -35,7 +35,7 @@ function Script:UpdateWorld()
 	if window:KeyHit(Key.J) then
 		if not THUI:GamePaused() then
 			THUI:PauseGame(true)
-			THUI:Show("journal")
+			THUI:Show(self.pg)
 		end
 	end
 end
