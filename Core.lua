@@ -94,7 +94,7 @@ function THUI:_Hide(group)
 	wnd:FlushMouse()
 	
 	if group.active then
-		for i=1, #self.active_groups do
+		for i=#self.active_groups, 1, -1 do
 			if self.active_groups[i] == group then
 				table.remove(self.active_groups, i)
 			elseif self.active_groups[i].showmouse then
