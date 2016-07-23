@@ -36,9 +36,6 @@ function THUI:Initialize()
 end
 
 function THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
-	if THUI.groups[name] ~= nil then
-		Debug("group: "..name.." already exists!")
-	end
 
 	local ctx = Context:GetCurrent()
 
@@ -57,24 +54,12 @@ function THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
 		Add=THUI.GroupAdd
 	}
 	
-	THUI.groups[name] = group
+	table.insert(THUI.groups, group)
 
 	return group
 end
 
-function THUI:LookupByName(name)
-	return self.groups[name].data
-end
-
-function THUI:Show(name)
-	if type(name) == "string" then
-		local group = self.groups[name]
-	else
-		group = name
-	end
-
-	assert(group ~= nil, "THUI Show() invalid group name")
-
+function THUI:_Show(group)
 	local wnd = Window:GetCurrent()
 	wnd:FlushKeys()
 	wnd:FlushMouse()
@@ -89,20 +74,24 @@ function THUI:Show(name)
 	end
 end
 
-function THUI:Hide(name)
+function THUI:Show(name)
 	if type(name) == "string" then
-		local group = self.groups[name]
+		for i=1, #self.groups do
+			if self.groups[i].name == name then
+				self:_Show(self.groups[i])
+			end
+		end
 	else
-		group = name
+		self:_Show(name)
 	end
+end
 
+function THUI:_Hide(group)
 	local showmouse = false
 	
 	local wnd = Window:GetCurrent()
 	wnd:FlushKeys()
 	wnd:FlushMouse()
-
-	assert(group ~= nil, "THUI Hide() - invalid group name")
 	
 	if group.active then
 		for i=1, #self.active_groups do
@@ -117,6 +106,18 @@ function THUI:Hide(name)
 
 	if not showmouse then
 		wnd:HideMouse()
+	end
+end
+
+function THUI:Hide(name)
+	if type(name) == "string" then
+		for i=1, #self.groups do
+			if self.groups[i].name == name then
+				self:_Hide(self.groups[i])
+			end
+		end
+	else
+		self:_Hide(name)
 	end
 end
 

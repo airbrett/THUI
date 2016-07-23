@@ -38,7 +38,8 @@ function Script:Start()
 end
 
 function Script:Use()
-	THUI:LookupByName("journal"):AddJounalEntry(self)
+	Journal:AddJounalEntry(self)
+
 	THUI:Show("entry1")
 	THUI:PauseGame(true)
 	self.entity:Hide()

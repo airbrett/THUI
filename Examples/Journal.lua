@@ -3,6 +3,8 @@
 import "Addons/THUI/THUI.lua"
 
 function Script:Start()
+	Journal = self --global that entries can use to add themselves
+
 	self.pg = THUI:CreateGroup("journal", self, THUI.AUTOSCALE, nil, nil, 1023, 767)
 
 	local font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(16, 767))
