@@ -52,30 +52,20 @@ THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
 This function creates a group to add widgets to.
 
 [code]
-THUI:LookupByName(name)
-[/code]
-[list]
-[*]name=the name of the group you are looking for
-[/list]
-
-Call this function if you want to retrieve a group to do something to it.
-
-
-[code]
 THUI:Show(name)
 [/code]
 [list]
-[*]name=the name of the group you want to make visible
+[*]name=group or name of group
 [/list]
-This function will activate a group, making it's widgets visible. You may have multiple visible groups.
+If name is group, it will be shown. If name is a string, all groups with matching name will be shown.
 
 [code]
 THUI:Hide()
 [/code]
 [list]
-[*]name=the name of the group you want to hide
+[*]name=group or name of group
 [/list]
-This function will hide a group by name.
+If name is group, it will be hidden. If name is a string, all groups with matching name will be hidden.
 
 [code]
 THUI:Activate(name)
