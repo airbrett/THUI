@@ -65,7 +65,7 @@ function THUI.Button:Draw(ctx)
 	end
 
 	if self.text ~= nil then
-		ctx:SetFont(self.font)
+		ctx:SetFont(THUI:GetFont(self.font))
 		ctx:SetColor(fg)
 		THUI:DrawText(ctx, self.text, self.x + self.width/2, self.y + self.height/2, THUI.CENTER, THUI.MIDDLE)
 	end

@@ -22,16 +22,17 @@ function THUI.Label:Create(x, y, width, height, text, justify_x, justify_y)
 end
 
 function THUI.Label:Draw(ctx)
+	local font = THUI:GetFont(self.font)
 	ctx:SetColor(self.fg_color)
-	ctx:SetFont(self.font)
+	ctx:SetFont(font)
 
 	if self.img ~= nil then
 		ctx:DrawImage(self.img, self.x, self.y, self.width, self.height)
 	end
 
 	if self.text ~= nil then
-		local x = THUI:_CalcJustifyX(self.x, self.font:GetTextWidth(self.text), self.x_justify)
-		local y = THUI:_CalcJustifyY(self.y, self.font:GetHeight(), self.y_justify)
+		local x = THUI:_CalcJustifyX(self.x, font:GetTextWidth(self.text), self.x_justify)
+		local y = THUI:_CalcJustifyY(self.y, font:GetHeight(), self.y_justify)
 		ctx:DrawText(self.text, x, y)
 	end
 end

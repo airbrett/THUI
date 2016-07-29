@@ -14,7 +14,7 @@ THUI = {
 	default_inactive_color = Vec4(0.2, 0.2, 0.2, 1.0),
 	default_hover_color = Vec4(1.0, 0.0, 0.0, 1.0),
 	default_mouse_down_color = Vec4(1.0, 1.0, 0.0, 1.0),
-	default_font = Font:Load("Fonts/arial.ttf", 10),
+	FontCache = {},
 
 	--scale modes
 	ABSOLUTE = 0,
@@ -32,7 +32,7 @@ THUI = {
 
 --I hate this function but I can't think of a way around it right now...
 function THUI:Initialize()
-	THUI.default_font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(10, 767) )
+	THUI.default_font = 10
 end
 
 function THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
@@ -207,6 +207,35 @@ function THUI:DoCallback(callback, widget)
 	end
 end
 
+function THUI:_ScaleFont(fontheight, ratio_w, ratio_h)
+	local ctx = Context:GetCurrent()
+
+	local font = self:GetFont(fontheight)
+	local fontwidth = font:GetTextWidth("0")
+
+	local target_w = fontwidth * ratio_w
+	local target_h = fontheight * ratio_h
+
+	font = self:GetFont(target_h)
+	textwidth = font:GetTextWidth("0")
+
+	if textwidth > target_w then
+		scaled_size = target_h * (target_w / textwidth)
+	else
+		scaled_size = target_h
+	end
+
+	return scaled_size
+end
+
+function THUI:GetFont(size)
+	if self.FontCache[size] == nil then
+		self.FontCache[size] = Font:Load("Fonts/arial.ttf", size)
+	end
+
+	return self.FontCache[size]
+end
+
 function THUI:Rel2AbsX(x, max_value)
 	return Context:GetCurrent():GetWidth() * x / max_value
 end
@@ -270,14 +299,18 @@ function THUI:GroupAdd(widget)
 			self:Add(v)
 		end
 	else
-		if self.mode == THUI.AUTOSCALE then
-			widget.x = THUI:Rel2AbsX(widget.x, self.width)
-			widget.y = THUI:Rel2AbsY(widget.y, self.height)
-			widget.width = THUI:Rel2AbsX(widget.width, self.width)
-			widget.height = THUI:Rel2AbsY(widget.height, self.height)
-		elseif self.mode == THUI.ANCHOR then
-			local ctx = Context:GetCurrent()
+		local ctx = Context:GetCurrent()
 
+		if self.mode == THUI.AUTOSCALE then
+			local ratio_w = ctx:GetWidth() / self.width
+			local ratio_h = ctx:GetHeight() / self.height
+
+			widget.x = widget.x * ratio_w
+			widget.y = widget.y * ratio_h
+			widget.width = widget.width * ratio_w
+			widget.height = widget.height * ratio_h
+			widget.font = THUI:_ScaleFont(widget.font, ratio_w, ratio_h)
+		elseif self.mode == THUI.ANCHOR then
 			if self.anchorx == THUI.RIGHT then
 				widget.x = ctx:GetWidth() - self.width + widget.x
 			elseif self.anchorx == THUI.CENTER then
