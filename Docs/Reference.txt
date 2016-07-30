@@ -39,7 +39,7 @@ Initializes THUI defaul font to scale with the context height. This function sho
 THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
 [/code]
 [list]
-[*]name=the name of the group, this is the name you will use when you want to activate this group
+[*]name=the name of the group, this is the name you will use when you want to show this group
 [*]data=this is any data you want to be able to retrieve from the group at a later time (usually with LookUpByName())
 [*]mode=this can be THUI.AUTOSCALE, THUI.ABSOLUTE, or THUI.ANCHOR. THUI.AUTOSCALE will stretch all widgets in relation to the width and height specified. THUI.ABSOLUTE will make no adjustments to the widgets dimensions. THUI.ANCHOR will utilize anchorx, anchory, width and height parameters to move the widgets to the position specified.
 [*]anchorx=THUI.LEFT, THUI.CENTER, THUI.RIGHT used by THUI.AUTOSCALE
@@ -68,19 +68,6 @@ THUI:Hide()
 If name is group, it will be hidden. If name is a string, all groups with matching name will be hidden.
 
 [code]
-THUI:Activate(name)
-[/code]
-[list]
-[*]name=the name of the group you want to make visible
-[/list]
-This function will activate a group, making it's widgets visible. It will also hide any currently visible groups. This function is deprecated, please see THUI:Show()
-
-[code]
-THUI:Deactivate()
-[/code]
-This function will hide all visible groups. This function is deprecated, please see THUI:Hide()
-
-[code]
 THUI:Update()
 [/code]
 This function should be called from Main.lua every iteration. It will redraw any widgets and also fire off any callbacks that are ready to be fired
@@ -99,33 +86,14 @@ THUI:GamePaused()
 Returns true if game is paused, false if not paused.
 
 [code]
+THUI:GetFont()
+[/code]
+Returns a font from cache
+
+[code]
 THUI:MouseOverUI()
 [/code]
 Returns true if the mouse is hovering over a widget, false otherwise
-
-[code]
-THUI:Rel2AbsX(x, max_value)
-[/code]
-[list]
-[*]x=relative position
-[*]max_value=used to determine ratio for scaling
-
-[*]return value=absolute position
-[/list]
-
-Returns the absolution position representation of a relative position along the x axis. By default the the relative position is a range of 0 being far left and 1024 being far right.
-
-[code]
-THUI:Rel2AbsY(y, max_value)
-[/code]
-[list]
-[*]y=relative position
-[*]max_value=used to determine ratio for scaling
-
-[*]return value=absolute position
-[/list]
-
-Returns the absolution position representation of a relative position along the y axis. By default the the relative position is a range of 0 being top and 768 being bottom.
 
 [code]
 THUI:Callback(func, tbl, arg)
