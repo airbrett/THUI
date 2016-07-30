@@ -6,7 +6,7 @@ Script.index = 3
 Script.title = "Entry 3"
 
 function Script:Start()
-	local font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(16, 767))
+	local font = 24
 
 	local text = {
 	"Day 45",
@@ -23,7 +23,7 @@ function Script:Start()
 	self.grp:Add(label)
 
 	local y = 150
-	local leading = font:GetHeight() * 1.3
+	local leading = THUI:GetFont(label.font):GetHeight() * 1.3
 	for i=0, #text do
 		label = THUI.Label:Create(512, y, 0, 0, text[i], THUI.CENTER, THUI.MIDDLE)
 		label.font = font

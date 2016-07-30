@@ -7,7 +7,7 @@ function Script:Start()
 
 	self.pg = THUI:CreateGroup("journal", self, THUI.AUTOSCALE, nil, nil, 1023, 767)
 
-	local font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(16, 767))
+	local font = 24
 	local title = THUI.Label:Create(512, 50, 0, 0, "Journal", THUI.CENTER, THUI.MIDDLE)
 	title.font = font
 
