@@ -218,14 +218,6 @@ function THUI:GetFont(size)
 	return self.FontCache[size]
 end
 
-function THUI:Rel2AbsX(x, max_value)
-	return Context:GetCurrent():GetWidth() * x / max_value
-end
-
-function THUI:Rel2AbsY(y, max_value)
-	return Context:GetCurrent():GetHeight() * y / max_value
-end
-
 function THUI:_CalcJustifyX(x, width, justify)
 	if justify == THUI.CENTER then
 		x = x - width/2
