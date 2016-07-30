@@ -21,10 +21,11 @@ THUI = {
 	AUTOSCALE = 1,
 	ANCHOR = 2,
 
-	--
+	--x
 	LEFT = 0,
 	CENTER = 1,
 	RIGHT = 2,
+	--y
 	MIDDLE = 3,
 	TOP = 4,
 	BOTTOM = 5
@@ -253,7 +254,7 @@ function THUI:DrawText(ctx, text, x, y, justify_x, justify_y)
 end
 
 function THUI:CreateWidget(x, y, width, height, justify_x, justify_y)
-	w = {
+	local w = {
 		x = THUI:_CalcJustifyX(x, width, justify_x),
 		y = THUI:_CalcJustifyY(y, height, justify_y),
 		width = width,
