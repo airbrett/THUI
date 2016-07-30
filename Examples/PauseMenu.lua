@@ -35,7 +35,7 @@ function Script:Start()
 
 	self.group.update = THUI:Callback(self.UpdateUI, self, nil)
 
-	local title_font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(32, 767))
+	local title_font = 24
 	local title = THUI.Label:Create(100, 0, 0, 0, "Paused!", THUI.CENTER, THUI.TOP)
 	title.font = title_font
 
@@ -57,7 +57,7 @@ function Script:Start()
 
 	self.group.update = THUI:Callback(self.UpdateUI, self, nil)
 
-	local title_font = Font:Load("Fonts/arial.ttf", THUI:Rel2AbsY(32, 767))
+	local title_font = 24
 	local title = THUI.Label:Create(400, 200, 0, 0, "Paused!", THUI.CENTER, THUI.TOP)
 	title.font = title_font
 
