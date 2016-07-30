@@ -121,24 +121,6 @@ function THUI:Hide(name)
 	end
 end
 
-function THUI:Activate(name)
-	THUI:Deactivate()
-	THUI:Show(name)
-end
-
-function THUI:Deactivate()
-	local wnd = Window:GetCurrent()
-	wnd:FlushKeys()
-	wnd:FlushMouse()
-
-	for i=1, #self.active_groups do
-		self.active_groups[i].active = false
-	end
-
-	self.active_groups = {}
-	wnd:HideMouse()
-end
-
 function THUI:Update()
 	local ctx = Context:GetCurrent()
 	local wnd = Window:GetCurrent()
