@@ -15,8 +15,8 @@ function THUI.Label:Create(x, y, width, height, text, justify_x, justify_y)
 	label.text = text
 	label.font = THUI.default_font
 	label.draw = self.Draw;
-	label.text_justify_x = THUI.LEFT
-	label.text_justify_y = THUI.TOP
+	label.text_justify_x = justify_x
+	label.text_justify_y = justify_y
 	label.bg_color = nil
 	
 	return label
