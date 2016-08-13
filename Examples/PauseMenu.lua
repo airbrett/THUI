@@ -18,8 +18,6 @@ function Script:Start()
 
 	local width = 200
 	local button1 = THUI.Button:Create(512, 300, width, 50, "Resume", THUI.CENTER, THUI.MIDDLE)
-	button1.font_path = "Fonts/Windsong.ttf"
-	button1.font_size = 40
 
 	button1.click = THUI:Callback(self.ResumeButtonClicked, self)
 	
