@@ -26,14 +26,9 @@ function Script:Start()
 	local exitbutton = THUI.Button:Create(512, 400, width, 50, "Exit", THUI.CENTER, THUI.MIDDLE)
 	exitbutton.click = THUI:Callback(self.ExitButtonClicked, self)
 
-	local values_text = {"ComboBox1", "ComboBox2", "3", "ComboBox4"}
-	local combobox = THUI.ComboBox:Create(512, 600, 300, 30, values_text, 1, THUI.LEFT, THUI.TOP)
-
 	self.group:Add(title)
 	self.group:Add(button1)
 	self.group:Add(exitbutton)
-
-	self.group:Add(combobox)
 --]]
 
 --Anchored version
@@ -83,7 +78,6 @@ end
 
 function Script:ResumeButtonClicked(button)
 	self:HideMenu()
-	changemapname = "menu_test"
 end
 
 function Script:ExitButtonClicked(button)
