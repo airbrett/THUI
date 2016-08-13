@@ -15,17 +15,14 @@ function THUI.ComboBox:Create(x, y, width, height, values, selected, justify_x, 
 	combo.width = width
 	combo.height = height
 	combo.ComboBoxSelectValue = THUI.ComboBox.ComboBoxSelectValue
-	--combo.Decrement = THUI.ComboBox.Decrement
-	--combo.Increment = THUI.ComboBox.Increment
 
 	combo.widgets = {}
 	combo.values = values
 	combo.selected = selected
-	combo.label = THUI.Label:Create(combo.x, combo.y + height/2, 0, 0, combo.values[combo.selected])
-	combo.label.x = combo.x + combo.width/2 - combo.label.font:GetTextWidth(combo.label.text)/2
+	combo.label = THUI.Label:Create(combo.x + width/2, combo.y + height/2, 0, 0, combo.values[combo.selected], THUI.CENTER, THUI.MIDDLE)
 	
 	--Left button
-	combo.left_button = THUI.Button:Create(combo.x, y, height, height, "-")
+	combo.left_button = THUI.Button:Create(combo.x, combo.y, height, height, "-")
 	combo.left_button.click = THUI:Callback(self.Decrement, combo)
 
 	--Right button
@@ -51,6 +48,5 @@ function THUI.ComboBox:ComboBoxSelectValue(delta)
 	if self.values[self.selected + delta] ~= nil then
 		self.selected = self.selected + delta
 		self.label.text = self.values[self.selected]
-		self.label.x = self.x + self.width/2 - self.label.font:GetTextWidth(self.label.text)/2
 	end
 end
