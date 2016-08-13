@@ -4,36 +4,36 @@ import "Addons/THUI/QTree.lua"
 
 if THUI~=nil then return end
 
-THUI = {
-	groups = {},
-	active_groups = {},
-	mouse_over_element = false,
-
-	default_fg_color = Vec4(1.0, 1.0, 1.0, 1.0),
-	default_bg_color = Vec4(0.0, 0.0, 0.0, 1.0),
-	default_inactive_color = Vec4(0.2, 0.2, 0.2, 1.0),
-	default_hover_color = Vec4(1.0, 0.0, 0.0, 1.0),
-	default_mouse_down_color = Vec4(1.0, 1.0, 0.0, 1.0),
-	FontCache = {},
-
-	--scale modes
-	ABSOLUTE = 0,
-	AUTOSCALE = 1,
-	ANCHOR = 2,
-
-	--x
-	LEFT = 0,
-	CENTER = 1,
-	RIGHT = 2,
-	--y
-	MIDDLE = 3,
-	TOP = 4,
-	BOTTOM = 5
-}
+THUI = {}
 
 --I hate this function but I can't think of a way around it right now...
 function THUI:Initialize()
 	THUI.default_font = 10
+
+	THUI.groups = {}
+	THUI.active_groups = {}
+	THUI.mouse_over_element = false
+
+	THUI.default_fg_color = Vec4(1.0, 1.0, 1.0, 1.0)
+	THUI.default_bg_color = Vec4(0.0, 0.0, 0.0, 1.0)
+	THUI.default_inactive_color = Vec4(0.2, 0.2, 0.2, 1.0)
+	THUI.default_hover_color = Vec4(1.0, 0.0, 0.0, 1.0)
+	THUI.default_mouse_down_color = Vec4(1.0, 1.0, 0.0, 1.0)
+	THUI.FontCache = {}
+
+	--scale modes
+	THUI.ABSOLUTE = 0
+	THUI.AUTOSCALE = 1
+	THUI.ANCHOR = 2
+
+	--x
+	THUI.LEFT = 0
+	THUI.CENTER = 1
+	THUI.RIGHT = 2
+	--y
+	THUI.MIDDLE = 3
+	THUI.TOP = 4
+	THUI.BOTTOM = 5
 end
 
 function THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
