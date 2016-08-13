@@ -13,7 +13,6 @@ function THUI.Button:Create(x, y, width, height, text, justify_x, justify_y)
 	local button = THUI:CreateWidget(x, y, width, height, justify_x, justify_y)
 	
 	button.text = text
-	button.font = THUI.default_font
 	button.active = true;
 	button.interactive = true
 	button.hover_color = THUI.default_hover_color
@@ -65,7 +64,7 @@ function THUI.Button:Draw(ctx)
 	end
 
 	if self.text ~= nil then
-		ctx:SetFont(THUI:GetFont(self.font))
+		ctx:SetFont(self.font)
 		ctx:SetColor(fg)
 		THUI:DrawText(ctx, self.text, self.x + self.width/2, self.y + self.height/2, THUI.CENTER, THUI.MIDDLE)
 	end

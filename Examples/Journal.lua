@@ -7,9 +7,8 @@ function Script:Start()
 
 	self.pg = THUI:CreateGroup("journal", self, THUI.AUTOSCALE, nil, nil, 1023, 767)
 
-	local font = 24
 	local title = THUI.Label:Create(512, 50, 0, 0, "Journal", THUI.CENTER, THUI.MIDDLE)
-	title.font = font
+	title.font_size = 24
 
 	local button1 = THUI.Button:Create(50, 700, 200, 50, "Resume")
 

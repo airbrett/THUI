@@ -18,15 +18,22 @@ function Script:Start()
 
 	local width = 200
 	local button1 = THUI.Button:Create(512, 300, width, 50, "Resume", THUI.CENTER, THUI.MIDDLE)
+	button1.font_path = "Fonts/Windsong.ttf"
+	button1.font_size = 40
 
 	button1.click = THUI:Callback(self.ResumeButtonClicked, self)
 	
 	local exitbutton = THUI.Button:Create(512, 400, width, 50, "Exit", THUI.CENTER, THUI.MIDDLE)
 	exitbutton.click = THUI:Callback(self.ExitButtonClicked, self)
 
+	local values_text = {"ComboBox1", "ComboBox2", "3", "ComboBox4"}
+	local combobox = THUI.ComboBox:Create(512, 600, 300, 30, values_text, 1, THUI.LEFT, THUI.TOP)
+
 	self.group:Add(title)
 	self.group:Add(button1)
 	self.group:Add(exitbutton)
+
+	self.group:Add(combobox)
 --]]
 
 --Anchored version
@@ -76,6 +83,7 @@ end
 
 function Script:ResumeButtonClicked(button)
 	self:HideMenu()
+	changemapname = "menu_test"
 end
 
 function Script:ExitButtonClicked(button)

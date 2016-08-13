@@ -13,7 +13,6 @@ function THUI.Label:Create(x, y, width, height, text, justify_x, justify_y)
 	local label = THUI:CreateWidget(x, y, width, height, justify_x, justify_y)
 	
 	label.text = text
-	label.font = THUI.default_font
 	label.draw = self.Draw;
 	label.text_justify_x = justify_x
 	label.text_justify_y = justify_y
@@ -31,9 +30,7 @@ function THUI.Label:Draw(ctx)
 	end
 
 	if self.text ~= nil then
-		local font = THUI:GetFont(self.font)
-
-		ctx:SetFont(font)
+		ctx:SetFont(self.font)
 		ctx:SetColor(self.fg_color)
 
 		local reference_x
@@ -56,8 +53,8 @@ function THUI.Label:Draw(ctx)
 		end
 		
 
-		local x = THUI:_CalcJustifyX(reference_x, font:GetTextWidth(self.text), self.text_justify_x)
-		local y = THUI:_CalcJustifyY(reference_y, font:GetHeight(), self.text_justify_y)
+		local x = THUI:_CalcJustifyX(reference_x, self.font:GetTextWidth(self.text), self.text_justify_x)
+		local y = THUI:_CalcJustifyY(reference_y, self.font:GetHeight(), self.text_justify_y)
 
 		ctx:DrawText(self.text, x, y)
 	end

@@ -8,32 +8,35 @@ THUI = {}
 
 --I hate this function but I can't think of a way around it right now...
 function THUI:Initialize()
-	THUI.default_font = 10
+	self.groups = {}
+	self.active_groups = {}
+	self.mouse_over_element = false
 
-	THUI.groups = {}
-	THUI.active_groups = {}
-	THUI.mouse_over_element = false
+	self.default_fg_color = Vec4(1.0, 1.0, 1.0, 1.0)
+	self.default_bg_color = Vec4(0.0, 0.0, 0.0, 1.0)
+	self.default_inactive_color = Vec4(0.2, 0.2, 0.2, 1.0)
+	self.default_hover_color = Vec4(1.0, 0.0, 0.0, 1.0)
+	self.default_mouse_down_color = Vec4(1.0, 1.0, 0.0, 1.0)
 
-	THUI.default_fg_color = Vec4(1.0, 1.0, 1.0, 1.0)
-	THUI.default_bg_color = Vec4(0.0, 0.0, 0.0, 1.0)
-	THUI.default_inactive_color = Vec4(0.2, 0.2, 0.2, 1.0)
-	THUI.default_hover_color = Vec4(1.0, 0.0, 0.0, 1.0)
-	THUI.default_mouse_down_color = Vec4(1.0, 1.0, 0.0, 1.0)
-	THUI.FontCache = {}
+	if self.FontCache == nil then
+		self.FontCache = {}
+	else
+		--do I want to release all the fonts?
+	end
 
 	--scale modes
-	THUI.ABSOLUTE = 0
-	THUI.AUTOSCALE = 1
-	THUI.ANCHOR = 2
+	self.ABSOLUTE = 0
+	self.AUTOSCALE = 1
+	self.ANCHOR = 2
 
 	--x
-	THUI.LEFT = 0
-	THUI.CENTER = 1
-	THUI.RIGHT = 2
+	self.LEFT = 0
+	self.CENTER = 1
+	self.RIGHT = 2
 	--y
-	THUI.MIDDLE = 3
-	THUI.TOP = 4
-	THUI.BOTTOM = 5
+	self.MIDDLE = 3
+	self.TOP = 4
+	self.BOTTOM = 5
 end
 
 function THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
@@ -190,16 +193,16 @@ function THUI:DoCallback(callback, widget)
 	end
 end
 
-function THUI:_ScaleFont(fontheight, ratio_w, ratio_h)
+function THUI:_ScaleFont(fontpath, fontheight, ratio_w, ratio_h)
 	local ctx = Context:GetCurrent()
 
-	local font = self:GetFont(fontheight)
+	local font = self:GetFont(fontpath, fontheight)
 	local fontwidth = font:GetTextWidth("0")
 
 	local target_w = fontwidth * ratio_w
 	local target_h = fontheight * ratio_h
 
-	font = self:GetFont(target_h)
+	font = self:GetFont(fontpath, target_h)
 	textwidth = font:GetTextWidth("0")
 
 	if textwidth > target_w then
@@ -211,12 +214,22 @@ function THUI:_ScaleFont(fontheight, ratio_w, ratio_h)
 	return scaled_size
 end
 
-function THUI:GetFont(size)
-	if self.FontCache[size] == nil then
-		self.FontCache[size] = Font:Load("Fonts/arial.ttf", size)
+function THUI:GetFont(path, size)
+	local font = self.FontCache[path]
+
+	if font == nil then
+		font = {}
+		self.FontCache[path] = font
 	end
 
-	return self.FontCache[size]
+	local CachedFont = font[size]
+
+	if CachedFont == nil then
+		CachedFont = Font:Load(path, size)
+		font[size] = CachedFont
+	end
+
+	return CachedFont
 end
 
 function THUI:_CalcJustifyX(x, width, justify)
@@ -262,7 +275,9 @@ function THUI:CreateWidget(x, y, width, height, justify_x, justify_y)
 		fg_color = THUI.default_fg_color,
 		bg_color = THUI.default_bg_color,
 		inactive_color = THUI.default_inactive_color,
-		visible = true
+		visible = true,
+		font_path = "Fonts/arial.ttf",
+		font_size = 10
 	}
 
 	return w
@@ -284,7 +299,9 @@ function THUI:GroupAdd(widget)
 			widget.y = widget.y * ratio_h
 			widget.width = widget.width * ratio_w
 			widget.height = widget.height * ratio_h
-			widget.font = THUI:_ScaleFont(widget.font, ratio_w, ratio_h)
+			local ScaledFontSize = THUI:_ScaleFont(widget.font_path, widget.font_size, ratio_w, ratio_h)
+			widget.font = THUI:GetFont(widget.font_path, ScaledFontSize)
+			
 		elseif self.mode == THUI.ANCHOR then
 			if self.anchorx == THUI.RIGHT then
 				widget.x = ctx:GetWidth() - self.width + widget.x
@@ -297,6 +314,10 @@ function THUI:GroupAdd(widget)
 			elseif self.anchory == THUI.MIDDLE then
 				widget.y = ctx:GetHeight()/2 - self.height/2 + widget.y
 			end
+
+			widget.font = THUI:GetFont(widget.font_path, widget.font_size)
+		else
+			widget.font = THUI:GetFont(widget.font_path, widget.font_size)
 		end
 
 		if widget.interactive then
