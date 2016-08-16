@@ -40,6 +40,8 @@ while not exit_game do
 		--Clear all entities
 		world:Clear()
 		
+		THUI:Initialize()
+		
 		--Load the next map
 		Time:Pause()
 		if Map:Load("Maps/"..changemapname..".map")==false then return end
