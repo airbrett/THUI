@@ -139,48 +139,59 @@ function THUI:Update()
 	elseif wnd:MouseDown(1) then
 		self.mouse_down = true
 	end
+	
+--Make a copy of self.active_groups in case changes are made to self.active_groups
+--during the update, iterate over the copy
+	local active_groups = {}
 
 	for i=1, #self.active_groups do
-		local active_group = self.active_groups[i]
+		table.insert(active_groups, self.active_groups[i])
+	end
+
+	for i=1, #active_groups do
+		local active_group = active_groups[i]
 		
-		--draw
-		ctx:SetBlendMode(Blend.Alpha)
-		
-		for k,v in pairs(active_group.widgets) do
-			
-			if v.visible then
-				v:draw(ctx)
+		if active_group.active then
+			if active_group.update ~= nil then
+				self:DoCallback(active_group.update, active_group)
 			end
-		end
 
-		--ctx:SetColor(0, 1, 0, 1)
-		--_qtree_draw(active_group.qtree)
+			--draw
+			ctx:SetBlendMode(Blend.Alpha)
+			
+			for k,v in pairs(active_group.widgets) do
+				
+				if v.visible then
+					v:draw(ctx)
+				end
+			end
 
-		if active_group.update ~= nil then
-			self:DoCallback(active_group.update, active_group)
-		end
-		
-		--do events
-		local result = qtree_lookup(active_group.qtree, mouse_pos.x, mouse_pos.y)
-		
-		if result ~= nil then
-			local k,v
-			for k,v in pairs(result) do
-				if v.visible and v.active then
-					if mouse_pos.x > v.x and mouse_pos.x < v.x + v.width and
-						mouse_pos.y > v.y and mouse_pos.y < v.y + v.height then
-						v.hover = true
-						v.mouse_down = self.mouse_down
-						self.mouse_over_element = true
-						
-						if clicked then
-							if v.click ~=nil then
-								self:DoCallback(v.click, v)
+			--ctx:SetColor(0, 1, 0, 1)
+			--_qtree_draw(active_group.qtree)
+			
+			--do events
+			local result = qtree_lookup(active_group.qtree, mouse_pos.x, mouse_pos.y)
+			
+			if result ~= nil then
+				local k,v
+				for k,v in pairs(result) do
+					if v.visible and v.active then
+						if mouse_pos.x > v.x and mouse_pos.x < v.x + v.width and
+							mouse_pos.y > v.y and mouse_pos.y < v.y + v.height then
+							v.hover = true
+							v.mouse_down = self.mouse_down
+							self.mouse_over_element = true
+							
+							if clicked then
+								if v.click ~=nil then
+									self:DoCallback(v.click, v)
+								end
 							end
 						end
 					end
 				end
 			end
+
 		end
 	end
 end
