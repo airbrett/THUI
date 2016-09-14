@@ -26,14 +26,13 @@ THUI.default_bg_color --Background color used by widgets
 THUI.default_inactive_color --Inactive color used by widgets
 THUI.default_hover_color --Color used by widgets when mouse is hovering over them
 THUI.default_mouse_down_color --Color used by widgets when mouse is hovering over them and the left mouse button is down
-THUI.default_font --This is the font used by the widgets
 [/code]
 
 [b]functions[/b]
 [code]
 THUI:Initialize()
 [/code]
-Initializes THUI defaul font to scale with the context height. This function should be called only on startup after the context is created.
+Initializes THUI variables. Required for use.
 
 [code]
 THUI:CreateGroup(name, data, mode, anchorx, anchory, width, height)
@@ -86,8 +85,12 @@ THUI:GamePaused()
 Returns true if game is paused, false if not paused.
 
 [code]
-THUI:GetFont()
+THUI:GetFont(path, size)
 [/code]
+[list]
+[*]path=Path of the font
+[*]size=Size of the font
+[/list]
 Returns a font from cache
 
 [code]
@@ -126,7 +129,8 @@ Adds a specified widget to the group. At this time the widget's position and dim
 [b]properties[/b]
 [code]
 label.text --Text to be displayed
-label.font --Font to be used when label is drawn
+label.font_path --Path to the font
+label.font_size --Font size
 label.img --Texture to be drawn instead of text
 [/code]
 
@@ -149,7 +153,8 @@ THUI.Label:Create(x, y, width, height, text, justify_x, justify_y)
 [b]properties[/b]
 [code]
 button.text --Text to be displayed
-button.font --Font to be used when button text is drawn
+button.font_path --Path to the font
+button.font_size --Font size
 button.active --This flag determines if the button is enabled or not.
 button.visible --Hides or shows the button
 button.click --Function callback for when button is clicked

@@ -14,7 +14,7 @@ function Script:Start()
 	self.group.update = THUI:Callback(self.UpdateUI, self, nil)
 
 	local title = THUI.Label:Create(512, 50, 0, 0, "Paused!", THUI.CENTER, THUI.MIDDLE)
-	title.font = 24
+	title.font_size = 24
 
 	local width = 200
 	local button1 = THUI.Button:Create(512, 300, width, 50, "Resume", THUI.CENTER, THUI.MIDDLE)
@@ -35,9 +35,8 @@ function Script:Start()
 
 	self.group.update = THUI:Callback(self.UpdateUI, self, nil)
 
-	local title_font = 24
 	local title = THUI.Label:Create(100, 0, 0, 0, "Paused!", THUI.CENTER, THUI.TOP)
-	title.font = title_font
+	title.font_size = 24
 
 	local button1 = THUI.Button:Create(0, 50, 200, 50, "Resume")
 
@@ -57,9 +56,8 @@ function Script:Start()
 
 	self.group.update = THUI:Callback(self.UpdateUI, self, nil)
 
-	local title_font = 24
 	local title = THUI.Label:Create(400, 200, 0, 0, "Paused!", THUI.CENTER, THUI.TOP)
-	title.font = title_font
+	title.font_size = 24
 
 	local button1 = THUI.Button:Create(300, 250, 200, 50, "Resume")
 
