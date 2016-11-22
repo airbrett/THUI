@@ -308,8 +308,21 @@ function THUI:GroupAdd(widget)
 
 			widget.x = widget.x * ratio_w
 			widget.y = widget.y * ratio_h
-			widget.width = widget.width * ratio_w
-			widget.height = widget.height * ratio_h
+
+			if widget.maintain_aspect_ratio then
+				local aspect_ratio = math.min(ratio_w, ratio_h)
+				local total_width = widget.width * ratio_w
+				local total_height = widget.width * ratio_h
+				
+				widget.width = widget.width * aspect_ratio
+				widget.height = widget.height * aspect_ratio
+				widget.x = widget.x + (total_width - widget.width)/2
+				widget.y = widget.y + (total_height - widget.height)/2
+			else
+				widget.width = widget.width * ratio_w
+				widget.height = widget.height * ratio_h
+			end
+
 			local ScaledFontSize = THUI:_ScaleFont(widget.font_path, widget.font_size, ratio_w, ratio_h)
 			widget.font = THUI:GetFont(widget.font_path, ScaledFontSize)
 			
@@ -338,7 +351,6 @@ function THUI:GroupAdd(widget)
 		table.insert(self.widgets, widget)
 	end
 end
-
 
 --I can't think of a better spot for this function right now, bleh.
 function THUI:PauseGame(pause)
