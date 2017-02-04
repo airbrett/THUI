@@ -1,10 +1,15 @@
 import "Addons/THUI/THUI.lua"
+--Initialize Steamworks (optional)
+Steamworks:Initialize()
 
 paused = false
 exit_game = false
 
---Initialize Steamworks (optional)
-Steamworks:Initialize()
+--Initialize analytics (optional).  Create an account at www.gameamalytics.com to get your game keys
+--[[if DEBUG==false then
+	Analytics:SetKeys("GAME_KEY_xxxxxxxxx", "SECRET_KEY_xxxxxxxxx")
+	Analytics:Enable()
+end]]
 
 --Set the application title
 title="MyGame"
@@ -19,15 +24,19 @@ window:HideMouse()
 context=Context:Create(window,0)
 if context==nil then return end
 
-THUI:Initialize()
-
 --Create a world
 world=World:Create()
 world:SetLightQuality((System:GetProperty("lightquality","1")))
 
+THUI:Initialize()
+
 --Load a map
 local mapfile = System:GetProperty("map","Maps/start.map")
 if Map:Load(mapfile)==false then return end
+prevmapname = FileSystem:StripAll(changemapname)
+
+--Send analytics event
+Analytics:SendProgressEvent("Start",prevmapname)
 
 while not exit_game do
 	
@@ -36,15 +45,31 @@ while not exit_game do
 	
 	--Handle map change
 	if changemapname~=nil then
+		--Pause the clock
+		Time:Pause()
+		
+		--Pause garbage collection
+		System:GCSuspend()		
 		
 		--Clear all entities
 		world:Clear()
-		
+
 		THUI:Initialize()
 		
+		--Send analytics event
+		Analytics:SendProgressEvent("Complete",prevmapname)
+		
 		--Load the next map
-		Time:Pause()
 		if Map:Load("Maps/"..changemapname..".map")==false then return end
+		prevmapname = changemapname
+		
+		--Send analytics event
+		Analytics:SendProgressEvent("Start",prevmapname)
+		
+		--Resume garbage collection
+		System:GCResume()
+		
+		--Resume the clock
 		Time:Resume()
 		
 		changemapname = nil
@@ -57,6 +82,7 @@ while not exit_game do
 		--Update the world
 		world:Update()
 	end
+	
 	--Render the world
 	world:Render()
 
