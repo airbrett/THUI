@@ -9,9 +9,12 @@ To kick things off, I am going to start with required changes to Main.lua, a sim
 Main.lua modifications:
 It should be pretty trivial to make the same modifications to App.lua but I like Main.lua best and I don't want to spend time talking about App.lua. There is an example Main.lua in the examples directory with all these changes.
 
-1) First thing is first, import THUI at the top of the file 
+1) First thing is first, import THUI at the top of the file and initialize some variables
 [CODE]
 import "Addons/THUI/THUI.lua"
+
+paused = false
+exit_game = false
 [/CODE]
 
 2) Immediately after the context is created, initialize THUI
